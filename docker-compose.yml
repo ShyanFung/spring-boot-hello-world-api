@@ -1,0 +1,70 @@
+# *****************************************************************************
+# *** Docker-compose file for starting this project.
+# *****************************************************************************
+# 
+# This is a development compose stack to get all docker api services up 
+# and running.
+# 
+# To start/stop with docker-compose, run:
+#   docker-compose up -d
+#   docker-compose down
+# 
+# See: https://docs.docker.com/compose/compose-file/
+---
+version: "3"
+
+services:
+
+  # java spring-boot webapp/api.
+  hello-world-api:
+    image: hello-world-api:0.0.1-SNAPSHOT
+    container_name: hello-world-api
+    depends_on:
+      - mongodb
+    links:
+      - mongodb:api-web-mdb
+    networks:
+      - api-web-net
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 1G
+    environment:
+      ## Update properties or replace with env_file.
+      - JAVA_HEAP_OPTS=-Xms128m
+      - SPRING_APP_PROFILE=default
+    ports:
+      - 8787:8080
+    volumes:
+      #- ${PWD:-.}/hello-world-api/config:/home/app/config
+      - ${PWD:-.}/hello-world-api/log:/home/app/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  # MongoDB data store.
+  mongodb:
+    image: mongo:3.6
+    container_name: mongodb
+    networks:
+      api-web-net:
+        aliases:
+          - api-web-mdb
+    deploy:
+      mode: global
+    ports:
+      ## Only expose ports locally: https://fralef.me/docker-and-iptables.html
+      - 0.0.0.0:27017:27017
+    restart: always
+
+networks:
+  api-web-net:
+
+###############################################################################
+## Named volume is not starting in docker-compose as expected.
+###############################################################################
+## TODO use named volumes for logging, etc.
