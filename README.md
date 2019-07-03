@@ -40,7 +40,7 @@ docker exec -it hello-world-api sh
 docker ps
 
 #### Test SwaggerUI (from running container w/ port forwarding):
-http://localhost:8787/swagger-ui.html
+Open http://localhost:8787/swagger-ui.html
 
 #### Stop/kill Docker Service:
 docker kill hello-world-api
@@ -63,8 +63,8 @@ docker-compose down
 #### Test SwaggerUI (from deployed image on AWS ECS)
 - Assumes elastic ip is 3.208.128.124
 - Assumes container port is mapped
-http://3.208.128.124/swagger-ui.html
-https://3.208.128.124/swagger-ui.html
+Open http://3.208.128.124/swagger-ui.html
+Open https://3.208.128.124/swagger-ui.html
 
 #### AWS EC2 Instance Setup to connect to ECS Cluster:
 
